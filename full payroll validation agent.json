@@ -1,0 +1,1048 @@
+{
+  "name": "full payroll validation agent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1904,
+        80
+      ],
+      "id": "ba1cae8e-fd9e-4109-a9d4-f7513490fe52",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ieSuj6jOXagfujgD",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "$binary",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1728,
+        80
+      ],
+      "id": "e1039d9c-c825-437a-8950-c7f3bf3e8ca9",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b0c38498-f90b-4a79-bf16-61ea37b4d707",
+              "leftValue": "={{ $json.headers.subject }}",
+              "rightValue": "[PAYROLL]",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1504,
+        80
+      ],
+      "id": "51eea083-3995-47d5-9ff2-52ee3c551618",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "47fd2068-4c74-448a-bc37-997382d45729",
+              "leftValue": "={{ Object.values($binary)[0].fileExtension }}",
+              "rightValue": "xlsx",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "46d86f05-d9bb-48b5-ba62-1fb84efa4471",
+              "leftValue": "={{ Object.values($binary)[0].fileExtension }}",
+              "rightValue": "csv",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1552,
+        -240
+      ],
+      "id": "c00f0e2e-aaf8-4637-b58e-bc8350f5bab0",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ Object.values($binary)[0].fileExtension }}",
+                    "rightValue": "xlsx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6265e2d3-03b0-46eb-834d-cfc5186cf159"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "37cbed20-0558-4f1a-a272-4a57433de58b",
+                    "leftValue": "={{ Object.values($binary)[0].fileExtension }}",
+                    "rightValue": "csv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1296,
+        -256
+      ],
+      "id": "25f6be3a-099f-4f2f-bc40-c4713165cd57",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "={{ Object.keys($binary)[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -608,
+        -752
+      ],
+      "id": "2626c61d-cc70-49bd-808e-f1c72a451126",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "={{ Object.keys($binary)[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -624,
+        -224
+      ],
+      "id": "1d712550-4f79-4eea-8254-238eee822106",
+      "name": "Extract from File2"
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        192,
+        -464
+      ],
+      "id": "84a659e9-393f-4bca-9f15-d81c0cdd34b6",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ Object.values($binary)[0].fileName }} ",
+                    "rightValue": "payroll",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "79d7462f-070b-40da-8f78-2db931d6633e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "aa0066a5-a328-4a9b-b21a-ea4ec3e15f21",
+                    "leftValue": "={{ Object.values($binary)[0].fileName }}",
+                    "rightValue": "absence",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "eef18212-1b58-4363-9618-db297e577a98",
+                    "leftValue": "={{ Object.values($binary)[0].fileName }}",
+                    "rightValue": "worktime",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1040,
+        -400
+      ],
+      "id": "37d9e90e-5aad-45be-b330-c87ffed7b8db",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "={{ Object.keys($binary)[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -592,
+        -576
+      ],
+      "id": "bea35752-784f-4a95-a35f-12bc5ec03d5f",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "={{ Object.keys($binary)[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -592,
+        -416
+      ],
+      "id": "9d0f50f6-b3f2-4eee-b9e0-f08905bfbc87",
+      "name": "Extract from File3"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "items_in = _items\nfor item in items_in:\n    item[\"json\"][\"source_file\"] = \"payroll\"\nreturn items_in"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        -752
+      ],
+      "id": "d7dc2441-8041-4536-9695-c708c018f8f3",
+      "name": "Code in Python"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "items_in = _items\nfor item in items_in:\n    item[\"json\"][\"source_file\"] = \"absence\"\nreturn items_in"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -352,
+        -576
+      ],
+      "id": "5220ba04-4b3a-44e1-a94c-b91857f5a489",
+      "name": "Code in Python1"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "items_in = _items\nfor item in items_in:\n    item[\"json\"][\"source_file\"] = \"worktime\"\nreturn items_in"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        -416
+      ],
+      "id": "b4d1e767-4e1e-4d50-b491-14c07f474157",
+      "name": "Code in Python2"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "items_in = _items\nfor item in items_in:\n    item[\"json\"][\"source_file\"] = \"csv\"\nreturn items_in"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        -224
+      ],
+      "id": "1cdcda1d-f147-4bdf-9242-0a87e55cf3d8",
+      "name": "Code in Python3"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "items_in = _items\nworktime = []\nabsence = []\npayroll = []\n\nfor item in items_in:\n    row = item[\"json\"]\n    source = row.get(\"source_file\", \"\")\n    \n    if source == \"worktime\":\n        worktime.append({\n            \"employee_id\": row.get(\"Employee ID\", \"\"),\n            \"employee_name\": row.get(\"Employee Name\", \"\"),\n            \"date\": row.get(\"Date\", \"\"),\n            \"hours_worked\": row.get(\"Hours Worked\", None),\n            \"department\": row.get(\"Department\", \"\"),\n            \"cost_center\": row.get(\"Cost Center\", \"\"),\n            \"notes\": row.get(\"Notes\", \"\")\n        })\n    \n    elif source == \"absence\":\n        absence.append({\n            \"employee_id\": row.get(\"Employee ID\", \"\"),\n            \"employee_name\": row.get(\"Employee Name\", \"\"),\n            \"date\": row.get(\"Date\", \"\"),\n            \"absence_type\": row.get(\"Absence Type\", \"\"),\n            \"hours_absent\": row.get(\"Hours Absent\", None),\n            \"approved_by\": row.get(\"Approved By\", \"\"),\n            \"notes\": row.get(\"Notes\", \"\")\n        })\n    \n    elif source == \"payroll\":\n        payroll.append({\n            \"employee_id\": row.get(\"Employee ID\", \"\"),\n            \"employee_name\": row.get(\"Employee Name\", \"\"),\n            \"pay_period\": row.get(\"Pay Period\", \"\"),\n            \"base_hours\": row.get(\"Base Hours\", None),\n            \"overtime_hours\": row.get(\"Overtime Hours\", None),\n            \"cost_center\": row.get(\"Cost Center\", \"\"),\n            \"status\": row.get(\"Status\", \"\"),\n            \"notes\": row.get(\"Notes\", \"\")\n        })\n\nreturn [{\n    \"json\": {\n        \"worktime\": worktime,\n        \"absence\": absence,\n        \"payroll\": payroll\n    }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -400
+      ],
+      "id": "87ed67f6-342f-45ca-ba20-3ae50f4a888a",
+      "name": "Code in Python4"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "items_in = _items\ndata = items_in[0][\"json\"]\nworktime = data.get(\"worktime\", [])\nabsence = data.get(\"absence\", [])\npayroll = data.get(\"payroll\", [])\nanomalies = []\n\ndef add_anomaly(rule, severity, employee_id, employee_name, detail, suggestion):\n    anomalies.append({\n        \"rule\": rule,\n        \"severity\": severity,\n        \"employee_id\": employee_id,\n        \"employee_name\": employee_name,\n        \"detail\": detail,\n        \"suggestion\": suggestion\n    })\n\ndef is_valid_date(date_str):\n    try:\n        parts = str(date_str).split(\"/\")\n        if len(parts) != 3:\n            return False\n        day, month, year = int(parts[0]), int(parts[1]), int(parts[2])\n        if month < 1 or month > 12:\n            return False\n        if day < 1 or day > 31:\n            return False\n        if year < 2000 or year > 2100:\n            return False\n        days_in_month = [0,31,28,31,30,31,30,31,31,30,31,30,31]\n        if day > days_in_month[month]:\n            return False\n        return True\n    except:\n        return False\n\ndef safe_float(val):\n    try:\n        if val in [None, \"\"]:\n            return None\n        return float(val)\n    except:\n        return None\n\npayroll_ids = set()\nfor p in payroll:\n    if p[\"employee_id\"]:\n        payroll_ids.add(p[\"employee_id\"])\n\nworktime_ids = set()\nfor w in worktime:\n    if w[\"employee_id\"]:\n        worktime_ids.add(w[\"employee_id\"])\n\nabsence_ids = set()\nfor a in absence:\n    if a[\"employee_id\"]:\n        absence_ids.add(a[\"employee_id\"])\n\nseen_worktime = {}\nfor row in worktime:\n    eid = row[\"employee_id\"]\n    name = row[\"employee_name\"]\n\n    if not eid:\n        add_anomaly(\"MISSING_EMPLOYEE_ID\", \"HIGH\", eid, name,\n            f\"Row has no employee ID — name: {name}\",\n            \"Assign correct employee ID before processing payroll\")\n\n    if not name:\n        add_anomaly(\"MISSING_EMPLOYEE_NAME\", \"HIGH\", eid, name,\n            f\"Employee ID {eid} has no name\",\n            \"Check employee master data for this ID\")\n\n    if not row[\"cost_center\"]:\n        add_anomaly(\"MISSING_COST_CENTER\", \"MEDIUM\", eid, name,\n            f\"{name} has no cost center assigned\",\n            \"Assign cost center before payroll finalization\")\n\n    if not is_valid_date(row[\"date\"]):\n        add_anomaly(\"INVALID_DATE\", \"HIGH\", eid, name,\n            f\"{name} has invalid date: {row['date']}\",\n            \"Correct the date to a valid calendar date\")\n\n    hours = safe_float(row[\"hours_worked\"])\n\n    if hours is None:\n        add_anomaly(\"MISSING_HOURS\", \"HIGH\", eid, name,\n            f\"{name} has missing hours on {row['date']}\",\n            \"Verify timesheet and enter correct hours\")\n\n    if hours is not None:\n        if hours < 0:\n            add_anomaly(\"NEGATIVE_HOURS\", \"HIGH\", eid, name,\n                f\"{name} has negative hours ({hours}) on {row['date']}\",\n                \"Correct entry — hours cannot be negative\")\n\n        if hours > 16:\n            add_anomaly(\"SUSPICIOUS_HOURS\", \"HIGH\", eid, name,\n                f\"{name} recorded {hours} hours on {row['date']} — exceeds 16h limit\",\n                \"Verify with manager — likely data entry error\")\n\n        if hours > 8:\n            add_anomaly(\"OVERTIME_DETECTED\", \"MEDIUM\", eid, name,\n                f\"{name} worked {hours} hours on {row['date']} — overtime detected\",\n                \"Verify overtime is approved and matches payroll overtime entry\")\n\n    key = f\"{eid}_{row['date']}\"\n    if key in seen_worktime:\n        add_anomaly(\"DUPLICATE_ENTRY\", \"HIGH\", eid, name,\n            f\"{name} has duplicate worktime entry on {row['date']}\",\n            \"Remove duplicate entry and verify correct hours\")\n    else:\n        seen_worktime[key] = True\n\n    if eid and eid not in payroll_ids:\n        add_anomaly(\"MISSING_PAYROLL_MAPPING\", \"HIGH\", eid, name,\n            f\"{name} ({eid}) exists in worktime but not in payroll\",\n            \"Add employee to payroll or investigate why they are missing\")\n\nfor row in absence:\n    eid = row[\"employee_id\"]\n    name = row[\"employee_name\"]\n\n    if not is_valid_date(row[\"date\"]):\n        add_anomaly(\"INVALID_DATE\", \"HIGH\", eid, name,\n            f\"{name} has invalid absence date: {row['date']}\",\n            \"Correct the date to a valid calendar date\")\n\n    if eid and eid not in worktime_ids:\n        add_anomaly(\"ABSENCE_NO_WORKTIME\", \"MEDIUM\", eid, name,\n            f\"{name} has absence record but no worktime entries\",\n            \"Verify if employee was active during this period\")\n\n    for wrow in worktime:\n        if wrow[\"employee_id\"] == eid and wrow[\"date\"] == row[\"date\"]:\n            w_hours = safe_float(wrow[\"hours_worked\"])\n            if w_hours and w_hours > 0:\n                add_anomaly(\"ABSENCE_WORKTIME_CONFLICT\", \"HIGH\", eid, name,\n                    f\"{name} has both absence and {w_hours} worktime hours on {row['date']}\",\n                    \"Reconcile — employee cannot be absent and working on the same day\")\n\nseen_payroll = {}\nfor row in payroll:\n    eid = row[\"employee_id\"]\n    name = row[\"employee_name\"]\n\n    if str(row[\"status\"]).lower() == \"inactive\":\n        add_anomaly(\"INACTIVE_EMPLOYEE_PAYROLL\", \"HIGH\", eid, name,\n            f\"{name} ({eid}) is inactive but has a payroll entry\",\n            \"Remove payroll entry or reactivate employee if error\")\n\n    if not row[\"cost_center\"]:\n        add_anomaly(\"MISSING_COST_CENTER\", \"MEDIUM\", eid, name,\n            f\"{name} has no cost center in payroll\",\n            \"Assign cost center before payroll finalization\")\n\n    if eid and eid not in worktime_ids:\n        add_anomaly(\"PAYROLL_NO_WORKTIME\", \"HIGH\", eid, name,\n            f\"{name} ({eid}) is in payroll but has no worktime entries\",\n            \"Verify employee worked this period or remove payroll entry\")\n\n    payroll_overtime = safe_float(row[\"overtime_hours\"]) or 0\n\n    worktime_overtime = 0\n    for w in worktime:\n        if w[\"employee_id\"] == eid:\n            h = safe_float(w[\"hours_worked\"])\n            if h and h > 8:\n                worktime_overtime += h - 8\n\n    if abs(payroll_overtime - worktime_overtime) > 1:\n        add_anomaly(\"OVERTIME_MISMATCH\", \"HIGH\", eid, name,\n            f\"{name} payroll overtime={payroll_overtime}h but worktime overtime={round(worktime_overtime, 1)}h\",\n            \"Reconcile overtime hours between worktime records and payroll entry\")\n\n    key = f\"{eid}_{row['pay_period']}\"\n    if key in seen_payroll:\n        add_anomaly(\"DUPLICATE_PAYROLL\", \"HIGH\", eid, name,\n            f\"{name} has duplicate payroll entry for {row['pay_period']}\",\n            \"Remove duplicate payroll entry immediately\")\n    else:\n        seen_payroll[key] = True\n\nreturn [{\n    \"json\": {\n        \"worktime\": worktime,\n        \"absence\": absence,\n        \"payroll\": payroll,\n        \"anomalies\": anomalies\n    }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        -400
+      ],
+      "id": "84a3c055-16ae-438d-9b4c-07c8b8b32cf7",
+      "name": "Code in Python5"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "items_in = _items\ndata = items_in[0][\"json\"]\nworktime = data.get(\"worktime\", [])\nabsence = data.get(\"absence\", [])\npayroll = data.get(\"payroll\", [])\nanomalies = data.get(\"anomalies\", [])\n\n# Employee totals from worktime\nemployee_totals = {}\nfor row in worktime:\n    name = row[\"employee_name\"] or \"Unknown\"\n    eid = row[\"employee_id\"] or \"N/A\"\n    key = f\"{eid}_{name}\"\n    if key not in employee_totals:\n        employee_totals[key] = {\n            \"employee_id\": eid,\n            \"employee_name\": name,\n            \"total_hours\": 0,\n            \"overtime_hours\": 0,\n            \"days_worked\": 0\n        }\n    hours = row[\"hours_worked\"]\n    try:\n        hours = float(hours) if hours not in [None, \"\"] else 0\n    except:\n        hours = 0\n    employee_totals[key][\"total_hours\"] += hours\n    employee_totals[key][\"overtime_hours\"] += max(0, hours - 8)\n    employee_totals[key][\"days_worked\"] += 1\n\n# Severity counts\nhigh = len([a for a in anomalies if a[\"severity\"] == \"HIGH\"])\nmedium = len([a for a in anomalies if a[\"severity\"] == \"MEDIUM\"])\n\n# Build final output\nfinal_json = {\n    \"summary\": {\n        \"total_employees\": len(employee_totals),\n        \"total_worktime_rows\": len(worktime),\n        \"total_absence_rows\": len(absence),\n        \"total_payroll_rows\": len(payroll),\n        \"total_anomalies\": len(anomalies),\n        \"high_severity\": high,\n        \"medium_severity\": medium,\n        \"status\": \"REQUIRES_REVIEW\" if high > 0 else \"OK\"\n    },\n    \"employee_totals\": list(employee_totals.values()),\n    \"anomalies\": anomalies,\n    \"audit_trail\": {\n        \"processed_at\": \"{{ $now }}\",\n        \"worktime_file\": \"worktime.xlsx\",\n        \"absence_file\": \"absence.xlsx\",\n        \"payroll_file\": \"payroll.xlsx\"\n    }\n}\n\nreturn [{\"json\": final_json}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        -400
+      ],
+      "id": "fec0b8fe-3143-40c2-8dc0-00a5cbd745a0",
+      "name": "Code in Python6"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ Object.values($binary)[0].fileName }} ",
+                    "rightValue": "worktime",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "9ce99067-9480-4bd4-ae3e-773831ca3111"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "18906907-7848-4ce2-bff6-92db77fe2c22",
+                    "leftValue": "={{ Object.values($binary)[0].fileName }} ",
+                    "rightValue": "payroll",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "94e69c5a-5b06-4ae6-9527-e22be35c21ed",
+                    "leftValue": "={{ Object.values($binary)[0].fileName }} ",
+                    "rightValue": "absence",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1056,
+        -144
+      ],
+      "id": "72515e50-6cea-498a-bd28-98aa6fe5d421",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a payroll audit assistant. You receive structured JSON from a payroll validation system. Do NOT perform any calculations — all numbers are already calculated. Do NOT invent anomalies — only report what is in the data.\n\nHere is the payroll validation result:\n\nSUMMARY:\n- Total Employees: {{ $json.summary.total_employees }}\n- Total Anomalies: {{ $json.summary.total_anomalies }}\n- High Severity Issues: {{ $json.summary.high_severity }}\n- Medium Severity Issues: {{ $json.summary.medium_severity }}\n- Status: {{ $json.summary.status }}\n\nEMPLOYEE TOTALS:\n{{ JSON.stringify($json.employee_totals) }}\n\nANOMALIES:\n{{ JSON.stringify($json.anomalies) }}\n\nPlease write:\n1. A brief executive summary (2-3 sentences)\n2. HIGH severity issues section\n3. MEDIUM severity issues section\n4. Overall recommendation\n\nKeep it concise and professional.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1120,
+        -672
+      ],
+      "id": "eb5e4a5b-7dd7-4145-8a06-072411233a6a",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1168,
+        -112
+      ],
+      "id": "87ad473c-e0e9-468a-8425-6df47f25f3e3",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "IFFwG4B0LJs28Dvj",
+          "name": "Gemini API kimberton.office13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "items_in = _items\n\ndata = items_in[0][\"json\"]\n\nllm_text = data.get(\"text\", \"\")\n\nsummary = data.get(\"summary\", {})\nemployee_totals = data.get(\"employee_totals\", [])\nanomalies = data.get(\"anomalies\", [])\n\nreport = f\"\"\"\nPAYROLL VALIDATION REPORT\n\nStatus: {summary.get('status', 'UNKNOWN')}\n\n==================================================\nEXECUTIVE SUMMARY\n==================================================\n\n{llm_text}\n\n==================================================\nSUMMARY METRICS\n==================================================\n\nTotal Employees: {summary.get('total_employees', 0)}\nTotal Anomalies: {summary.get('total_anomalies', 0)}\nHigh Severity Issues: {summary.get('high_severity', 0)}\nMedium Severity Issues: {summary.get('medium_severity', 0)}\n\n==================================================\nEMPLOYEE HOURS SUMMARY\n==================================================\n\"\"\"\n\nfor emp in employee_totals:\n    report += (\n        f\"\\nEmployee ID: {emp.get('employee_id', '')}\\n\"\n        f\"Name: {emp.get('employee_name', '')}\\n\"\n        f\"Total Hours: {round(emp.get('total_hours', 0), 1)}\\n\"\n        f\"Overtime Hours: {round(emp.get('overtime_hours', 0), 1)}\\n\"\n        f\"Days Worked: {emp.get('days_worked', 0)}\\n\"\n        f\"\\n--------------------------------------------------\\n\"\n    )\n\nreport += \"\\n==================================================\\n\"\nreport += \"ANOMALIES DETECTED\\n\"\nreport += \"==================================================\\n\"\n\nfor a in anomalies:\n    report += (\n        f\"\\nSeverity: {a.get('severity', '')}\\n\"\n        f\"Rule: {a.get('rule', '')}\\n\"\n        f\"Employee ID: {a.get('employee_id', '')}\\n\"\n        f\"Employee Name: {a.get('employee_name', '')}\\n\"\n        f\"\\nDetail:\\n{a.get('detail', '')}\\n\"\n        f\"\\nSuggestion:\\n{a.get('suggestion', '')}\\n\"\n        f\"\\n--------------------------------------------------\\n\"\n    )\n\nreport += \"\"\"\n==================================================\nEND OF REPORT\n==================================================\n\nGenerated automatically by Payroll Validation Agent\n\"\"\"\n\nrequests = [\n    {\n        \"insertText\": {\n            \"location\": {\n                \"index\": 1\n            },\n            \"text\": report\n        }\n    }\n]\n\nreturn [{\n    \"json\": {\n        \"report_text\": report,\n        \"requestBody\": {\n            \"requests\": requests\n        }\n    }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        -416
+      ],
+      "id": "269d0912-76fc-4cf5-83a9-e097c818d8c2",
+      "name": "Code in Python7"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1344,
+        -416
+      ],
+      "id": "01d6967a-7f42-481b-94f5-b1681d7aa53c",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -624,
+        -64
+      ],
+      "id": "44a95027-b4e2-467a-ba09-9c6f1a981535",
+      "name": "Extract from File4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -608,
+        144
+      ],
+      "id": "f5a0ca56-8ac5-4522-a5a4-e7dcc4cd3636",
+      "name": "Extract from File5"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "# Loop over input items and add a new field called 'my_new_field' to the JSON of each one\nfor item in _items:\n  item[\"json\"][\"my_new_field\"] = 1\nreturn _items"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        -64
+      ],
+      "id": "cb9d86b6-9f22-4f35-87d3-d168695acade",
+      "name": "Code in Python8"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "# Loop over input items and add a new field called 'my_new_field' to the JSON of each one\nfor item in _items:\n  item[\"json\"][\"my_new_field\"] = 1\nreturn _items"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        144
+      ],
+      "id": "d94b7a58-2ae4-45b2-8b69-d6cf793d28f3",
+      "name": "Code in Python9"
+    },
+    {
+      "parameters": {
+        "operation": "html",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1232,
+        416
+      ],
+      "id": "e13f055e-8541-4400-9709-82d6bf3a5564",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $json.report_text }}",
+        "name": "=PayrollReport-{{ $now.format('dd-MM-yyyy') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1rA4lBmxsXZkGaEo7F6GOeGFPxCOtFaJn",
+          "mode": "list",
+          "cachedResultName": "Full payroll validation agent",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1rA4lBmxsXZkGaEo7F6GOeGFPxCOtFaJn"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        -416
+      ],
+      "id": "769cd692-b9ab-46d9-8c1f-77c62950e996",
+      "name": "Create file from text",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nDN8Ijm9S6tTkM4y",
+          "name": "Google Drive account 8"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Code in Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File2": {
+      "main": [
+        [
+          {
+            "node": "Code in Python3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in Python1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File3": {
+      "main": [
+        [
+          {
+            "node": "Code in Python2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in Python2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Code in Python3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in Python4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python4": {
+      "main": [
+        [
+          {
+            "node": "Code in Python5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python5": {
+      "main": [
+        [
+          {
+            "node": "Code in Python6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python6": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in Python7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python7": {
+      "main": [
+        [
+          {
+            "node": "Create file from text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File4": {
+      "main": [
+        [
+          {
+            "node": "Code in Python8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File5": {
+      "main": [
+        [
+          {
+            "node": "Code in Python9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python8": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Code in Python9": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "221ac472-59a5-461c-9e87-8898dc222d43",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ae0adca2d52e4eeb0965dbbabcdc57b4cd58801cb314dd12d1e1eacf3298ea2c"
+  },
+  "id": "NOzGjFc0UPbRkymt",
+  "tags": []
+}
