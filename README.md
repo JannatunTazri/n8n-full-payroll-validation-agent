@@ -1,16 +1,16 @@
-Project 2 — Full Payroll Validation Agent
-A rule-based payroll reconciliation system that compares worktime, absence, and payroll data to detect inconsistencies before payroll is finalized. Python handles all validation logic. The LLM only writes human-readable summaries.
-Checks include: missing hours, overtime mismatches, duplicate entries, negative hours, inactive employees with payroll rows, absence conflicts, invalid dates, missing cost centers, and more.
-Output: HTML report saved to Google Drive + Google Sheets audit log.
-Tech: n8n, Google Gemini, Google Drive API, Gmail API, Python
+Full Payroll Validation Agent
 
-Setup
+An n8n workflow that compares worktime, absence, and payroll Excel files to automatically detect inconsistencies before payroll is finalized.
 
-n8n instance (cloud or self-hosted)
-Google account with Gmail, Drive, Docs, and Sheets APIs enabled
-Google Gemini API key
-OAuth2 credentials configured in n8n
+How it works
 
-Emails must have [PAYROLL] in the subject and .xlsx or .csv attachments to trigger the workflow.
+Send an email with [PAYROLL] in the subject and three Excel files attached. The workflow extracts the data, runs 16 Python validation rules across all three files, and renders an HTML report inside n8n showing every issue found with its severity and a correction suggestion.
 
-Built during AI automation internship — May 2026
+All validation logic is deterministic Python. Google Gemini is used only for the human-readable summary.
+
+Tech stack
+
+n8n · Python · Google Gemini · Google Sheets · Gmail
+
+
+Kimberton Oy AI Automation Internship — 2026
